@@ -16,7 +16,7 @@ PATTON_COMPILED_PATH="./compiled"
 
 # Edit these lines to add new source files to the build.
 # Files are added in the order that they are listed.
-IKE_LOADER_INCLUDE=("api.lua" "editor.lua" "keys.lua" "main.lua" "observe.lua" "ui.lua")
+IKE_LOADER_INCLUDE=("api.lua" "editor.lua" "keys.lua" "main.lua" "observe.lua" "ui.lua" "util.lua")
 
 # -------DO NOT EDIT BELOW THIS LINE--------
 IKE_STARTTURN="xx_onload.lua"

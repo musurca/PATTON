@@ -30,63 +30,69 @@ PATTON_MirrorContactPostures = ->
 	mirrorside = PK_String_Eval("PATTON_PLAYER_SIDENAME")
 	dummy_side = OBSERVATION_DUMMY_SIDENAME
 	-- find the GUID of the player's side
+	side = List_Query(VP_GetSides(), (s) -> s.name == mirrorside)
 	mirrorside_guid = ""
-	for side in *VP_GetSides!
-		if side.name == mirrorside
-			mirrorside_guid = side.guid
-			break
+	if side
+		mirrorside_guid = side.guid
+
 	--now mirror contact postures
-	for k, contact in ipairs(ScenEdit_GetContacts(dummy_side))
+	for contact in *ScenEdit_GetContacts(dummy_side)
         unit = ScenEdit_GetUnit({
 			guid:contact.actualunitid
 		})
-        for j, ascon in ipairs(unit.ascontact)
-            if ascon.side == mirrorside_guid
-                mcontact = ScenEdit_GetContact({
-					side:mirrorside, 
-					guid:ascon.guid
-				})
-                if mcontact.posture != contact.posture
-                    contact.posture = mcontact.posture
-                break
+		as_con = List_Query(
+			unit.ascontact,
+			(c) -> c.side == mirrorside_guid
+		)
+		if as_con
+			mcontact = ScenEdit_GetContact({
+				side:mirrorside, 
+				guid:as_con.guid
+			})
+			if mcontact.posture != contact.posture
+				contact.posture = mcontact.posture
 
 PATTON_WipeRPs = ->
 	dummy_side = OBSERVATION_DUMMY_SIDENAME
 	area = {}
-	for side in *VP_GetSides!
-		if side.name == dummy_side
-			area = [v.name for k, v in ipairs(side.rps)]
-			if #area > 0
-				rps = ScenEdit_GetReferencePoints({
-					side:dummy_side,
-					area:area
-				})
-				for k, v in ipairs(rps)
-					ScenEdit_DeleteReferencePoint(v)
-			break
+	side = List_Query(
+		VP_GetSides(), 
+		(s) -> s.name == dummy_side
+	)
+	if side
+		area = [v.name for v in *side.rps]
+		if #area > 0
+			rps = ScenEdit_GetReferencePoints({
+				side:dummy_side,
+				area:area
+			})
+			for v in *rps
+				ScenEdit_DeleteReferencePoint(v)
 
 PATTON_TransferRPs = ->
 	player_side = PK_String_Eval("PATTON_PLAYER_SIDENAME")
 	dummy_side = OBSERVATION_DUMMY_SIDENAME
 	area = {}
-	for side in *VP_GetSides!
-		if side.name == dummy_side
-			area = [v.name for k, v in ipairs(side.rps)]
-			if #area > 0
-				rps = ScenEdit_GetReferencePoints({
-					side:dummy_side,
-					area:area
+	side = List_Query(
+		VP_GetSides(), 
+		(s) -> s.name == dummy_side
+	)
+	if side
+		area = [v.name for v in *side.rps]
+		if #area > 0
+			rps = ScenEdit_GetReferencePoints({
+				side:dummy_side,
+				area:area
+			})
+			for v in *rps
+				ScenEdit_AddReferencePoint({
+					side:player_side,
+					name:v.name,
+					lat:v.latitude,
+					lon:v.longitude,
+					highlighted:true
 				})
-				for k, v in ipairs(rps)
-					ScenEdit_AddReferencePoint({
-						side:player_side,
-						name:v.name,
-						lat:v.latitude,
-						lon:v.longitude,
-						highlighted:true
-					})
-					ScenEdit_DeleteReferencePoint(v)
-			break
+				ScenEdit_DeleteReferencePoint(v)
 
 PATTON_RemoveDummyUnit = ->
 	if PK_String_Exists("PATTON_DUMMY_GUID")

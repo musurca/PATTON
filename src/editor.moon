@@ -1,17 +1,34 @@
 export ^
 
+Side_Add = (side_name) ->
+	pcall(ScenEdit_AddSide, {
+		name:side_name
+	})
+
+Side_SwitchTo = (side_name) ->
+	pcall(ScenEdit_SetSideOptions, {
+		side:side_name,
+		switchto:true
+	})
+
+Side_Remove = (side_name) ->
+	pcall(ScenEdit_RemoveSide, {
+		side:side_name
+	})
+
 Event_Exists = (evt_name) ->
     -- clear any existing events with that name
-    for event in *ScenEdit_GetEvents!
-        if event.details.description == evt_name
-			return true
-    false
+	if List_Query(
+			ScenEdit_GetEvents(), 
+			(e) -> e.details.description == evt_name
+		)
+		return true
+	return false
 
 Event_Create = (evt_name, args) ->
     -- clear any existing events with that name
-    for event in *ScenEdit_GetEvents!
-        if event.details.description == evt_name
-            pcall(ScenEdit_SetEvent, evt_name, {mode:"remove"})
+	if Event_Exists(evt_name)
+		pcall(ScenEdit_SetEvent, evt_name, {mode:"remove"})   
 
     -- add our event
     args.mode="add"
@@ -69,35 +86,39 @@ Action_Delete = (action_name) ->
         mode:"remove"
     })
 
-Event_Delete = (evt_name, recurse) ->
-	recurse = recurse or true
+Event_Delete = (evt_name, recurse=true) ->
+	event = List_Query(
+		ScenEdit_GetEvents(),
+		(e) -> e.details.description == evt_name
+	)
+	if not event
+		return
+
 	if recurse
-		for event in *ScenEdit_GetEvents!
-			if event.details.description == evt_name
-				for e in *event.details.triggers
-					for key, val in pairs(e)
-						if val.Description
-							Event_RemoveTrigger(evt_name, val.Description)
-                            Trigger_Delete(val.Description)
-				
-				for e in *event.details.conditions
-					for key, val in pairs(e)
-						if val.Description
-							Event_RemoveCondition(evt_name, val.Description)
-                            Condition_Delete(val.Description)
-				
-				for e in *event.details.actions
-					for key, val in pairs(e) do
-                        if val.Description
-                            Event_RemoveAction(evt_name, val.Description)
-                            Action_Delete(val.Description)
-				break
+		for e in *event.details.triggers
+			for key, val in pairs(e)
+				if val.Description
+					Event_RemoveTrigger(evt_name, val.Description)
+					Trigger_Delete(val.Description)
+		
+		for e in *event.details.conditions
+			for key, val in pairs(e)
+				if val.Description
+					Event_RemoveCondition(evt_name, val.Description)
+					Condition_Delete(val.Description)
+		
+		for e in *event.details.actions
+			for key, val in pairs(e)
+				if val.Description
+					Event_RemoveAction(evt_name, val.Description)
+					Action_Delete(val.Description)
+	
 	pcall(ScenEdit_SetEvent, evt_name, {mode:"remove"})
 
 WaitFor = (seconds, code) ->
 	-- generate unique UUID
 	uuid = ->
-		template ='xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
+		template = MODULE_PREFIX..'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
 		swap = (c) ->
 			v = (c == 'x') and math.random(0, 0xf) or math.random(8, 0xb)
 			string.format('%x', v)

@@ -4,6 +4,10 @@ PATTON_InitAPIReplace = ->
 	PATTON_API_PlayerSide_Replace!
 	PATTON_API_SpecialMessage_Replace!
 
+PATTON_InitAPIRestore = ->
+	PATTON_API_PlayerSide_Restore!
+	PATTON_API_SpecialMessage_Restore!
+
 PATTON_API_PlayerSide_Replace = ->
 	if not __PATTON_FN_PLAYERSIDE__
 		export __PATTON_FN_PLAYERSIDE__
