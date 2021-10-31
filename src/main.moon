@@ -52,13 +52,12 @@ PATTON_Remove = ->
 	PATTON_InitAPIRestore!
 	
 	-- destroy all PATTON-based events
-	events = List_Select(
+	List_Execute(
 		ScenEdit_GetEvents(),
-		(e) -> string.find(e.details.description, MODULE_PREFIX)	
+		(e) -> string.find(e.details.description, MODULE_PREFIX),
+		(e) -> Event_Delete(e.details.description)
 	)
-	for event in *events
-		Event_Delete(event.details.description)
-
+	
 PATTON_Setup = ->
 	if PK_Boolean_Exists("PATTON_RUNNING")
 		PATTON_Remove!
