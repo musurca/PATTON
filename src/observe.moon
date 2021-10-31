@@ -19,6 +19,13 @@ PATTON_MirrorPlayerSide = ->
 			posture = ScenEdit_GetSidePosture(player_side, side_name)
 			ScenEdit_SetSidePosture(dummy_side, side_name, posture)
 
+PATTON_MirrorScore = ->
+	player_side = PK_String_Eval("PATTON_PLAYER_SIDENAME")
+	dummy_side = OBSERVATION_DUMMY_SIDENAME
+    sidescore = ScenEdit_GetScore(player_side)
+    if ScenEdit_GetScore(dummy_side) != sidescore
+        ScenEdit_SetScore(dummy_side, sidescore, player_side)
+
 PATTON_MirrorContactPostures = ->
 	mirrorside = PK_String_Eval("PATTON_PLAYER_SIDENAME")
 	dummy_side = OBSERVATION_DUMMY_SIDENAME

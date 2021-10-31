@@ -16,6 +16,10 @@ PATTON_OnLoad = ->
 	PATTON_InitRandom!
 	PATTON_InitAPIReplace!
 
+PATTON_OnTick = ->
+	PATTON_MirrorScore!
+	PATTON_MirrorContactPostures!
+
 PATTON_GiveOrders = ->
 	PATTON_TransferRPs!
 	PATTON_RemoveDummyUnit!
@@ -86,7 +90,7 @@ PATTON_Setup = ->
 		evt_update,
 		Action_Create("PATTON_Tick_Action", {
         	type:"LuaScript", 
-        	ScriptText:"PATTON_MirrorContactPostures()"
+        	ScriptText:"PATTON_OnTick()"
 		})
 	)
 
